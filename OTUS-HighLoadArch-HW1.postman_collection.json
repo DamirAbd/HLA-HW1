@@ -1,0 +1,89 @@
+{
+	"info": {
+		"_postman_id": "cc199915-5ed3-4827-8bd1-1a9c0ca68da1",
+		"name": "OTUS-HighLoadArch-HW1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24184895"
+	},
+	"item": [
+		{
+			"name": "API v1",
+			"item": [
+				{
+					"name": "USER",
+					"item": [
+						{
+							"name": "Регистрация новой анкеты",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ID\": \"ljjytts88\",\r\n    \"first_name\": \"SDFD\",\r\n    \"second_name\": \"DFSF\",\r\n    \"BirthDate\": \"1999-10-20\",\r\n    \"Biography\": \"sdfsdfsdfsdfd\",\r\n    \"City\": \"гор. Москва\",\r\n    \"password\": \"wsd\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/v1/user/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"user",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Получение токена",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"me@me.com\",\r\n    \"password\": \"asdd\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/v1/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Получение анкеты по ID",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

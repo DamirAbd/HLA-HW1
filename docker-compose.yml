@@ -1,0 +1,38 @@
+version: '3'
+services:
+
+  db:
+    image: postgres:12.19-bullseye
+    container_name: pgres
+    healthcheck:
+      test: "exit 0"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: socntw
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    volumes:
+      - .:/go/src/api
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: pwd
+      DB_NAME: socntw
+    links:
+      - db
+    depends_on:
+      - db
+
+volumes:
+  db_data:
