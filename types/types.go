@@ -18,6 +18,7 @@ type User struct {
 type UserStore interface {
 	GetUserByID(ID string) (*User, error)
 	CreateUser(User) error
+	GetUsersByName(FirstName string, SecondName string) ([]*UserForm, error)
 }
 
 type RegisterUserPayload struct {
@@ -32,4 +33,13 @@ type RegisterUserPayload struct {
 type LoginUserPayload struct {
 	ID       string `json:"ID" validate:"required"`
 	Password string `json:"password" validate:"required"`
+}
+
+type UserForm struct {
+	ID         string `json:"ID" validate:"required"`
+	FirstName  string `json:"first_name" validate:"required"`
+	SecondName string `json:"second_name" validate:"required"`
+	BirthDate  string `json:"birthdate" validate:"required"`
+	Biography  string `json:"biography" validate:"required"`
+	City       string `json:"city" validate:"required"`
 }

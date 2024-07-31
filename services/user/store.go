@@ -42,3 +42,32 @@ func (s *Store) GetUserByID(id string) (*types.User, error) {
 
 	return u, nil
 }
+
+func (s *Store) GetUsersByName(fname string, lname string) ([]*types.UserForm, error) {
+	rows, err := s.db.Query(`
+		SELECT u.ID
+			,u.FirstName
+			,u.SecondName
+			,u.BirthDate
+			,u.Biography
+			,u.City
+		FROM users u
+		WHERE FirstName LIKE $1 || '%' AND secondname LIKE $2 || '%'`, fname, lname)
+	users := make([]*types.UserForm, 0)
+
+	for rows.Next() {
+		u := new(types.UserForm)
+
+		err := rows.Scan(&u.ID, &u.FirstName, &u.SecondName, &u.BirthDate, &u.Biography, &u.City)
+		if err != nil {
+			log.Fatal(err)
+		}
+		users = append(users, u)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

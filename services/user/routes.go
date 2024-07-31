@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/DamirAbd/HLA-HW1/services/auth"
 	"github.com/DamirAbd/HLA-HW1/types"
@@ -25,6 +26,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", h.handleLogin).Methods("POST")
 	router.HandleFunc("/user/register", h.handleRegister).Methods("POST")
 	router.HandleFunc("/user/get/{userID}", auth.WithJWTAuth(h.handleGetUser, h.store)).Methods(http.MethodGet)
+	router.HandleFunc("/user/search", auth.WithJWTAuth(h.handleSearchUser, h.store)).Methods(http.MethodGet)
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -114,6 +116,29 @@ func (h *Handler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := h.store.GetUserByID(str)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, user)
+}
+
+func (h *Handler) handleSearchUser(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	fname, ok := query["first_name"]
+	if !ok {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing FirstName"))
+		return
+	}
+
+	lname, ok := query["last_name"]
+	if !ok {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing LastName"))
+		return
+	}
+
+	user, err := h.store.GetUsersByName(strings.Join(fname, ""), strings.Join(lname, ""))
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
