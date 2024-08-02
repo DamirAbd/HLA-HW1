@@ -49,10 +49,11 @@ func (s *Store) GetUsersByName(fname string, lname string) ([]*types.UserForm, e
 			,u.FirstName
 			,u.SecondName
 			,u.BirthDate
-			,u.Biography
-			,u.City
+			,COALESCE(u.Biography,'')
+			,COALESCE(u.City,'')
 		FROM users u
-		WHERE FirstName LIKE $1 || '%' AND secondname LIKE $2 || '%'`, fname, lname)
+		WHERE FirstName LIKE $1 || '%' AND secondname LIKE $2 || '%'
+		ORDER BY ID DESC`, fname, lname)
 	users := make([]*types.UserForm, 0)
 
 	for rows.Next() {

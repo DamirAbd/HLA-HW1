@@ -33,4 +33,7 @@ PrimaryKey на userID.
 - /user/register
 - /user/get/{id}
 
-[POSTMAN collection](OTUS-HighLoadArch-HW1.postman_collection.json)
+[POSTMAN collection](OTUS-HighLoadArch.postman_collection.json)
+
+-----
+### [Домашнее задание №2](HW2/readme.md)
