@@ -25,7 +25,18 @@ func (s *Store) CreateUser(user types.User) error {
 }
 
 func (s *Store) GetUserByID(id string) (*types.User, error) {
-	rows, err := s.db.Query("SELECT * FROM users WHERE id = $1", id)
+	rows, err := s.db.Query(`
+	SELECT u.userid
+	,u.ID
+	,u.FirstName
+	,u.SecondName
+	,u.BirthDate
+	,COALESCE(u.Biography,'')
+	,COALESCE(u.City,'')
+	,u.password
+	,u.createdat
+	FROM users u
+	WHERE id = $1`, id)
 	u := new(types.User)
 
 	for rows.Next() {
