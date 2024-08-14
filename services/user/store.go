@@ -92,3 +92,12 @@ func (s *Store) SetFriend(userId string, friendId string) error {
 
 	return nil
 }
+
+func (s *Store) DeleteFriend(userId string, friendId string) error {
+	_, err := s.db.Exec(`DELETE FROM friends WHERE user_id = $1 AND friend_id = $2`, userId, friendId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

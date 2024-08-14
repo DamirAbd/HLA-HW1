@@ -20,7 +20,7 @@ type UserStore interface {
 	CreateUser(User) error
 	GetUsersByName(FirstName string, SecondName string) ([]*UserForm, error)
 	SetFriend(ID string, IDFriend string) error
-	//	DeleteFriend(ID string, IDFriend string) error
+	DeleteFriend(ID string, IDFriend string) error
 }
 
 type RegisterUserPayload struct {

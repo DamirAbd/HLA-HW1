@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS friends (
   fr_id serial NOT NULL,
-  user_id integer REFERENCES users (userID),
-  friend_id integer REFERENCES users (userID),
+  user_id VARCHAR(255) REFERENCES users (userID),
+  friend_id VARCHAR(255) REFERENCES users (userID),
 
   PRIMARY KEY (fr_id)
 
