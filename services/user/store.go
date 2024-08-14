@@ -83,3 +83,12 @@ func (s *Store) GetUsersByName(fname string, lname string) ([]*types.UserForm, e
 
 	return users, nil
 }
+
+func (s *Store) SetFriend(userId string, friendId string) error {
+	_, err := s.db.Exec(`INSERT INTO friends (user_id, friend_id) VALUES ( $1, $2)`, userId, friendId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

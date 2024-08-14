@@ -27,6 +27,8 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/user/register", h.handleRegister).Methods("POST")
 	router.HandleFunc("/user/get/{userID}", auth.WithJWTAuth(h.handleGetUser, h.store)).Methods(http.MethodGet)
 	router.HandleFunc("/user/search", auth.WithJWTAuth(h.handleSearchUser, h.store)).Methods(http.MethodGet)
+	router.HandleFunc("/friend/set/{userID}", auth.WithJWTAuth(h.handlePutFriend, h.store)).Methods(http.MethodPut)
+	//	router.HandleFunc("/friend/delete/{userID}", auth.WithJWTAuth(h.handleDeleteFriend, h.store)).Methods(http.MethodPut)
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -145,4 +147,32 @@ func (h *Handler) handleSearchUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusOK, user)
+}
+
+func (h *Handler) handlePutFriend(w http.ResponseWriter, r *http.Request) {
+
+	//TODO: add unick pairs user+friend;
+
+	vars := mux.Vars(r)
+	str, ok := vars["userID"]
+	if !ok {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing user ID"))
+		return
+	}
+
+	_, err := h.store.GetUserByID(str)
+	if err != nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("friend not found"))
+	}
+
+	ctx := r.Context()
+	strid := auth.GetUserIDFromContext(ctx)
+
+	//write to table friends
+
+	err1 := h.store.SetFriend(strid, str)
+	if err1 != nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("friend not found"))
+	}
+
 }

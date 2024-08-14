@@ -2,7 +2,7 @@ version: '3'
 services:
 
   db:
-    image: postgres:12.19-bullseye
+    image: postgres:12-bullseye
     container_name: pgres
     healthcheck:
       test: "exit 0"
