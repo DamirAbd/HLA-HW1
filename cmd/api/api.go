@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/DamirAbd/HLA-HW1/services/post"
 	"github.com/DamirAbd/HLA-HW1/services/user"
 	"github.com/gorilla/mux"
 )
@@ -28,6 +29,10 @@ func (s *APIServer) Run() error {
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
+
+	postStore := post.NewStore(s.db)
+	postStoreHandler := post.NewHandler(postStore, userStore)
+	postStoreHandler.RegisterRoutes(subrouter)
 
 	log.Println("Listening on", s.addr)
 

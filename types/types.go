@@ -45,3 +45,20 @@ type UserForm struct {
 	Biography  string `json:"biography" validate:"required"`
 	City       string `json:"city" validate:"required"`
 }
+
+type Post struct {
+	ID      string `json:"ID"`
+	AutorId string `json:"authorID"`
+	Post    string `json:"post"`
+}
+
+type PostStore interface {
+	CreatePost(Post) error
+	DeletePost(ID string) error
+	UpdatePost(ID string, Post string) error
+	GetPostByID(id string) (*Post, error)
+}
+
+type PostPayload struct {
+	Post string `json:"text"`
+}

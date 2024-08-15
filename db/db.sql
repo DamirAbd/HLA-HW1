@@ -20,3 +20,12 @@ CREATE TABLE IF NOT EXISTS friends (
   PRIMARY KEY (fr_id)
 
 );
+
+CREATE TABLE IF NOT EXISTS posts (
+  post_id VARCHAR(255) NOT NULL,
+  author_id VARCHAR(255) REFERENCES users (userID),
+  post TEXT NULL,
+
+  PRIMARY KEY (post_id)
+
+);
