@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/DamirAbd/HLA-HW1/types"
+	"github.com/lib/pq"
 )
 
 type Store struct {
@@ -66,4 +67,38 @@ func (s *Store) DeletePost(id string) error {
 	}
 
 	return nil
+}
+
+func (s *Store) GetPostsByUsers(ids []string) ([]*types.Post, error) {
+	if len(ids) == 0 {
+		return nil, nil // Return empty result if no user IDs are provided
+	}
+
+	query := `
+		SELECT p.post_id, p.post, p.author_id 
+		FROM posts p
+		WHERE p.author_id = ANY($1)` // Use ANY($1) for PostgreSQL (pq driver)
+
+	rows, err := s.db.Query(query, pq.Array(ids)) // Convert slice to array for PostgreSQL
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []*types.Post
+
+	for rows.Next() {
+		post := new(types.Post)
+		if err := rows.Scan(&post.ID, &post.Post, &post.AutorId); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	// Check for errors during iteration
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
 }

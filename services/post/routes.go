@@ -27,6 +27,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/post/update", auth.WithJWTAuth(h.handleUpdatePost, h.userStore)).Methods((http.MethodPut))
 	router.HandleFunc("/post/delete/{postID}", auth.WithJWTAuth(h.handleDeletePost, h.userStore)).Methods((http.MethodPut))
 	router.HandleFunc("/post/get/{postID}", auth.WithJWTAuth(h.handleGetPost, h.userStore)).Methods((http.MethodGet))
+	router.HandleFunc("/post/feed", auth.WithJWTAuth(h.handleFeed, h.userStore)).Methods((http.MethodGet))
 
 }
 
@@ -120,4 +121,44 @@ func (h *Handler) handleDeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusNotFound, "")
+}
+
+func (h *Handler) handleFeed(w http.ResponseWriter, r *http.Request) {
+	// Get the user ID from the request context
+	userID := auth.GetUserIDFromContext(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Get the user's friends
+	friends, err := h.userStore.GetFriends(userID)
+	if err != nil {
+		http.Error(w, "Failed to fetch friends", http.StatusInternalServerError)
+		return
+	}
+
+	// Collect IDs of friends for batch fetching posts
+	var friendIDs []string
+	for _, friend := range friends {
+		friendIDs = append(friendIDs, friend.ID)
+	}
+
+	// Get posts for all friends in one query
+	feedPosts, err := h.store.GetPostsByUsers(friendIDs) // Optimized to batch fetch posts
+	if err != nil {
+		http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
+		return
+	}
+	/*
+		var feedPosts []*types.Post
+		for _, value := range friends {
+			feedPost, _ := h.store.GetPostsByUser(value.ID)
+			for _, post := range feedPost {
+				feedPosts = append(feedPosts, post)
+			}
+		}
+	*/
+
+	utils.WriteJSON(w, http.StatusOK, feedPosts)
 }

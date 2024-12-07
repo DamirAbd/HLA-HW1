@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS friends (
 
 CREATE TABLE IF NOT EXISTS posts (
   post_id VARCHAR(255) NOT NULL,
-  author_id VARCHAR(255) REFERENCES users (userID),
+  author_id character varying(255) REFERENCES users (ID),
   post TEXT NULL,
 
   PRIMARY KEY (post_id)

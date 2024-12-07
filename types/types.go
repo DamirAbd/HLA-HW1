@@ -21,6 +21,7 @@ type UserStore interface {
 	GetUsersByName(FirstName string, SecondName string) ([]*UserForm, error)
 	SetFriend(ID string, IDFriend string) error
 	DeleteFriend(ID string, IDFriend string) error
+	GetFriends(ID string) ([]*UserForm, error)
 }
 
 type RegisterUserPayload struct {
@@ -57,6 +58,7 @@ type PostStore interface {
 	DeletePost(ID string) error
 	UpdatePost(ID string, Post string) error
 	GetPostByID(id string) (*Post, error)
+	GetPostsByUsers(ids []string) ([]*Post, error)
 }
 
 type PostPayload struct {
