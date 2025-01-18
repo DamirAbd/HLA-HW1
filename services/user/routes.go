@@ -2,7 +2,6 @@ package user
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -52,8 +51,6 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !auth.ComparePasswords(u.Password, []byte(user.Password)) {
-		log.Println(u.Password)
-		log.Println(user.Password)
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid ID or password"))
 		return
 	}
