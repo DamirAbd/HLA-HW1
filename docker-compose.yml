@@ -34,5 +34,17 @@ services:
     depends_on:
       - db
 
+  redis:
+    image: redis:bookworm
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redisdata:/root/redis
+    environment:
+      - REDIS_PASSWORD=pwd
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=1
+
 volumes:
   db_data:

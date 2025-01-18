@@ -77,7 +77,7 @@ func (s *Store) GetPostsByUsers(ids []string) ([]*types.Post, error) {
 	query := `
 		SELECT p.post_id, p.post, p.author_id 
 		FROM posts p
-		WHERE p.author_id = ANY($1)` // Use ANY($1) for PostgreSQL (pq driver)
+		WHERE p.author_id = ANY($1)`
 
 	rows, err := s.db.Query(query, pq.Array(ids)) // Convert slice to array for PostgreSQL
 	if err != nil {

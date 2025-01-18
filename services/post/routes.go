@@ -16,10 +16,11 @@ import (
 type Handler struct {
 	store     types.PostStore
 	userStore types.UserStore
+	cache     types.FeedCache
 }
 
-func NewHandler(store types.PostStore, userStore types.UserStore) *Handler {
-	return &Handler{store: store, userStore: userStore}
+func NewHandler(store types.PostStore, userStore types.UserStore, cache types.FeedCache) *Handler {
+	return &Handler{store: store, userStore: userStore, cache: cache}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
@@ -46,9 +47,9 @@ func (h *Handler) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post.ID = uuid.New().String()
-
 	post.Post = payload.Post
 
+	// write post to db
 	err = h.store.CreatePost(types.Post{
 		ID:      post.ID,
 		AutorId: post.AutorId,
@@ -59,7 +60,37 @@ func (h *Handler) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if h.cache == nil {
+		http.Error(w, "Cache not initialized", http.StatusInternalServerError)
+		return
+	}
+
+	//refresh cache for posts by author
+	authorPostsKey := fmt.Sprintf("author_posts:%s", post.AutorId)
+
+	//get posts from cache
+	cachedPosts := h.cache.Get(authorPostsKey)
+
+	// add new post to cahe
+	cachedPosts = append(cachedPosts, &post)
+	h.cache.Set(authorPostsKey, cachedPosts)
+
+	// reply to client
+	utils.WriteJSON(w, http.StatusCreated, map[string]string{
+		"message": "Post created successfully",
+		"post_id": post.ID,
+	})
+
+	/* mock to check posts
+	var feedCache types.FeedCache
+	var mock []*types.Post
+
+	mock, _ = h.store.GetPostsByUsers([]string{"14f85915-7289-4564-b895-f9268add85de"})
+
+	feedCache.Set("asd", mock)
+
 	utils.WriteJSON(w, http.StatusCreated, post.ID)
+	*/
 }
 
 func (h *Handler) handleGetPost(w http.ResponseWriter, r *http.Request) {
@@ -145,20 +176,11 @@ func (h *Handler) handleFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get posts for all friends in one query
-	feedPosts, err := h.store.GetPostsByUsers(friendIDs) // Optimized to batch fetch posts
+	feedPosts, err := h.store.GetPostsByUsers(friendIDs)
 	if err != nil {
 		http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
 		return
 	}
-	/*
-		var feedPosts []*types.Post
-		for _, value := range friends {
-			feedPost, _ := h.store.GetPostsByUser(value.ID)
-			for _, post := range feedPost {
-				feedPosts = append(feedPosts, post)
-			}
-		}
-	*/
 
 	utils.WriteJSON(w, http.StatusOK, feedPosts)
 }

@@ -64,3 +64,8 @@ type PostStore interface {
 type PostPayload struct {
 	Post string `json:"text"`
 }
+
+type FeedCache interface {
+	Set(key string, value []*Post)
+	Get(key string) []*Post
+}
