@@ -65,15 +65,16 @@ func (h *Handler) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//refresh cache for posts by author
-	authorPostsKey := fmt.Sprintf("author_posts:%s", post.AutorId)
+	authorPostsKey := post.AutorId
 
 	//get posts from cache
-	cachedPosts := h.cache.Get(authorPostsKey)
+	//cachedPosts := h.cache.Get(authorPostsKey)
+
+	postsForCache, _ := h.store.GetPostsByUsers([]string{authorPostsKey})
 
 	// add new post to cahe
-	cachedPosts = append(cachedPosts, &post)
-	h.cache.Set(authorPostsKey, cachedPosts)
+	// postsForCache = append(postsForCache, &post)
+	h.cache.Set(authorPostsKey, postsForCache)
 
 	// reply to client
 	utils.WriteJSON(w, http.StatusCreated, map[string]string{
@@ -81,16 +82,6 @@ func (h *Handler) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		"post_id": post.ID,
 	})
 
-	/* mock to check posts
-	var feedCache types.FeedCache
-	var mock []*types.Post
-
-	mock, _ = h.store.GetPostsByUsers([]string{"14f85915-7289-4564-b895-f9268add85de"})
-
-	feedCache.Set("asd", mock)
-
-	utils.WriteJSON(w, http.StatusCreated, post.ID)
-	*/
 }
 
 func (h *Handler) handleGetPost(w http.ResponseWriter, r *http.Request) {
@@ -169,18 +160,39 @@ func (h *Handler) handleFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Collect IDs of friends for batch fetching posts
-	var friendIDs []string
+	// Try to get posts from cache
+	var cachedPosts []*types.Post
+	var idUncachedUsers []string
 	for _, friend := range friends {
-		friendIDs = append(friendIDs, friend.ID)
+		cachedPost := h.cache.Get(friend.ID)
+		if len(cachedPosts) == 0 {
+			idUncachedUsers = append(idUncachedUsers, friend.ID)
+		}
+		cachedPosts = append(cachedPost, cachedPost...)
 	}
 
-	// Get posts for all friends in one query
-	feedPosts, err := h.store.GetPostsByUsers(friendIDs)
-	if err != nil {
-		http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
-		return
+	var unCachedPosts []*types.Post
+	if len(idUncachedUsers) != 0 {
+		unCachedPosts, _ = h.store.GetPostsByUsers(idUncachedUsers)
 	}
+	/*
+		// Collect IDs of friends for batch fetching posts
+		var friendIDs []string
+		for _, friend := range friends {
+			friendIDs = append(friendIDs, friend.ID)
+		}
+	*/
+	/*
+		// Get posts for all friends in one query
+		feedPosts, err := h.store.GetPostsByUsers(friendIDs)
+		if err != nil {
+			http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
+			return
+		}
+	*/
+
+	feedPosts := append(cachedPosts, unCachedPosts...)
+	// Update cache for next request
 
 	utils.WriteJSON(w, http.StatusOK, feedPosts)
 }
