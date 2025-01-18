@@ -67,13 +67,8 @@ func (h *Handler) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	authorPostsKey := post.AutorId
 
-	//get posts from cache
-	//cachedPosts := h.cache.Get(authorPostsKey)
-
 	postsForCache, _ := h.store.GetPostsByUsers([]string{authorPostsKey})
 
-	// add new post to cahe
-	// postsForCache = append(postsForCache, &post)
 	h.cache.Set(authorPostsKey, postsForCache)
 
 	// reply to client
