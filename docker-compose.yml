@@ -44,7 +44,7 @@ services:
     environment:
       - REDIS_PASSWORD=pwd
       - REDIS_PORT=6379
-      - REDIS_DATABASES=1
+      - REDIS_DATABASES=16
 
 volumes:
   db_data:

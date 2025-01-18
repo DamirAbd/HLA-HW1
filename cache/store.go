@@ -17,7 +17,7 @@ func NewRedisCache() types.FeedCache {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "pwd",
-		DB:       1,
+		DB:       0,
 	})
 
 	// Check connection
