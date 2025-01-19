@@ -1,0 +1,22 @@
+@startuml
+
+actor Пользователь as user
+participant Приложение as app
+database "Кеш\nRedis" as loc
+database "БД\npostgres" as db
+
+
+user -> app: Показать посты друзей
+app -> loc: Запрос постов друзей
+loc --> app: Лента постов
+alt #00500020 Посты всех друзей есть в кеше
+    app -->  user: Показать ленту 
+else #50000020 Постов нет в ленте
+    app -> db: Получить посты
+    db --> app: Посты
+    app -> loc: Посты
+    loc --> app: Лента постов
+    app -->  user: Показать ленту 
+end
+
+@enduml

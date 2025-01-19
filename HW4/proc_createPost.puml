@@ -1,0 +1,16 @@
+@startuml
+
+actor Пользователь as user
+participant Приложение as app
+database "БД\npostgres" as db
+database "Кеш\nRedis" as loc
+
+
+user -> app: Опубликовать пост
+app -> db: Сохранить пост
+db --> app: Пост сохранен
+app --> user: Пост опубликован 
+
+db -> loc: Обновить кеш
+
+@enduml
