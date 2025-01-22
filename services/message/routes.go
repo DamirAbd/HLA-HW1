@@ -23,6 +23,7 @@ func NewHandler(store types.MessageStore, userStore types.UserStore) *Handler {
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/dialog/{userID}/send", auth.WithJWTAuth(h.handleCreateMessage, h.userStore)).Methods(http.MethodPost)
+	router.HandleFunc("/dialog/{userID}/list", auth.WithJWTAuth(h.handleGetMessages, h.userStore)).Methods(http.MethodGet)
 }
 
 func (h *Handler) handleCreateMessage(w http.ResponseWriter, r *http.Request) {
@@ -55,4 +56,26 @@ func (h *Handler) handleCreateMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func (h *Handler) handleGetMessages(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	str, ok := vars["userID"]
+	if !ok {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing user ID"))
+		return
+	}
+
+	var Message types.Message
+
+	Message.From = auth.GetUserIDFromContext(r.Context())
+	Message.To = str
+
+	msgs, errm := h.store.GetMessages(Message.From, Message.To)
+	if errm != nil {
+		utils.WriteError(w, http.StatusInternalServerError, errm)
+		return
+	}
+	utils.WriteJSON(w, http.StatusOK, msgs)
 }

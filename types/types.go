@@ -78,5 +78,5 @@ type Message struct {
 
 type MessageStore interface {
 	CreateMessage(Message) error
-	//GetMessages() error
+	GetMessages(sender string, recipient string) ([]*Message, error)
 }
