@@ -69,3 +69,14 @@ type FeedCache interface {
 	Set(key string, value []*Post)
 	Get(key string) []*Post
 }
+
+type Message struct {
+	Message string `json:"text" validate:"required"`
+	From    string `json:"from" validate:"required"`
+	To      string `json:"to" validate:"required"`
+}
+
+type MessageStore interface {
+	CreateMessage(Message) error
+	//GetMessages() error
+}

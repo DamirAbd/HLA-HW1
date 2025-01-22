@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/DamirAbd/HLA-HW1/cache"
+	"github.com/DamirAbd/HLA-HW1/services/message"
 	"github.com/DamirAbd/HLA-HW1/services/post"
 	"github.com/DamirAbd/HLA-HW1/services/user"
 	"github.com/gorilla/mux"
@@ -37,6 +38,10 @@ func (s *APIServer) Run() error {
 	postStore := post.NewStore(s.db)
 	postStoreHandler := post.NewHandler(postStore, userStore, redisCache)
 	postStoreHandler.RegisterRoutes(subrouter)
+
+	messageStore := message.NewStore(s.db)
+	messageStoreHandler := message.NewHandler(messageStore, userStore)
+	messageStoreHandler.RegisterRoutes(subrouter)
 
 	log.Println("Listening on", s.addr)
 
