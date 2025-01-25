@@ -46,5 +46,40 @@ services:
       - REDIS_PORT=6379
       - REDIS_DATABASES=16
 
+  coordinator:
+    image: citusdata/citus:alpine
+    container_name: citus_coordinator
+    ports:
+      - "5433:5433"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: cdb
+    command: >
+      postgres -c 'shared_preload_libraries=citus' 
+               -c 'citus.node_conninfo="host=coordinator port=5433"'
+
+  worker1:
+    image: citusdata/citus:alpine
+    container_name: citus_worker1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: cdb
+    command: >
+      postgres -c 'shared_preload_libraries=citus' 
+               -c 'citus.node_conninfo="host=worker1 port=5433"'
+
+  worker2:
+    image: citusdata/citus:alpine
+    container_name: citus_worker2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: cdb
+    command: >
+      postgres -c 'shared_preload_libraries=citus' 
+               -c 'citus.node_conninfo="host=worker2 port=5433"'
+
 volumes:
   db_data:
