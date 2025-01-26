@@ -19,7 +19,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"ID\": \"ljjytts88\",\r\n    \"first_name\": \"SDFD\",\r\n    \"second_name\": \"DFSF\",\r\n    \"BirthDate\": \"1999-10-20\",\r\n    \"Biography\": \"sdfsdfsdfsdfd\",\r\n    \"City\": \"гор. Москва\",\r\n    \"password\": \"wsd\"\r\n}",
+									"raw": "{\r\n    \"ID\": \"ljjytts88\",\r\n    \"first_name\": \"SDFD\",\r\n    \"second_name\": \"DFSF\",\r\n    \"BirthDate\": \"1999-10-20\",\r\n    \"Biography\": \"sdfsdfsdfsdfd\",\r\n    \"City\": \"гор. Москва\",\r\n    \"password\": \"pwd\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -65,7 +65,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": \"3a48e0ae-6064-432e-b676-b679744e36a8\",\r\n    \"password\": \"wsd\"\r\n}",
+									"raw": "{\r\n    \"id\": \"14f85915-7289-4564-b895-f9268add85de\",\r\n    \"password\": \"pwd\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -265,7 +265,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"text\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lectus mauris ultrices eros in cursus turpis massa.\"\r\n}",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -273,7 +273,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/api/v1/post/get/05464aea-60b4-4425-a2c9-a46c6c2cbd3e",
+									"raw": "http://localhost:8080/api/v1/post/get/f1b42abb-c121-4593-9951-4139af528dea",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -284,7 +284,7 @@
 										"v1",
 										"post",
 										"get",
-										"05464aea-60b4-4425-a2c9-a46c6c2cbd3e"
+										"f1b42abb-c121-4593-9951-4139af528dea"
 									]
 								}
 							},
@@ -388,6 +388,90 @@
 										"v1",
 										"post",
 										"feed"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "MESSAGES",
+					"item": [
+						{
+							"name": "Отправить сообщение",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"text\": \"message 1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/v1/dialog/4fad5973-9bc8-474f-ac92-a66dc09c7e41/send",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"dialog",
+										"4fad5973-9bc8-474f-ac92-a66dc09c7e41",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Получить диалог",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"text\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lectus mauris ultrices eros in cursus turpis massa.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/v1/dialog/4fad5973-9bc8-474f-ac92-a66dc09c7e41/list",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"dialog",
+										"4fad5973-9bc8-474f-ac92-a66dc09c7e41",
+										"list"
 									]
 								}
 							},

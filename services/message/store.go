@@ -3,6 +3,8 @@ package message
 import (
 	"database/sql"
 	"log"
+	"sort"
+	"strings"
 
 	"github.com/DamirAbd/HLA-HW1/types"
 )
@@ -16,7 +18,10 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) CreateMessage(message types.Message) error {
-	_, err := s.db.Exec("INSERT INTO messages (sender, recipient, message) VALUES ($1, $2, $3)", message.From, message.To, message.Message)
+	var key = []string{message.From, message.To}
+	sort.Strings(key)
+	c_key := strings.Join(key, "")
+	_, err := s.db.Exec("INSERT INTO messages (sender, recipient, message, citus_key) VALUES ($1, $2, $3, $4)", message.From, message.To, message.Message, c_key)
 	if err != nil {
 		return err
 	}
