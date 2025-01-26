@@ -10,14 +10,21 @@ import (
 
 func main() {
 	connStr := "postgres://root:pwd@pgres:5432/socntw?sslmode=disable"
-	db, err := db.SQLStorage(connStr)
+	tdb, err := db.SQLStorage(connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	initStorage(db)
+	connStrC := "postgres://postgres:pwd@citus_coordinator:5432/cdb?sslmode=disable"
+	cdb, err := db.SQLStorage(connStrC)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	server := api.NewAPIServer(":8080", db)
+	initStorage(tdb)
+	initStorage(cdb)
+
+	server := api.NewAPIServer(":8080", tdb, cdb)
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}

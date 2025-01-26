@@ -15,12 +15,14 @@ import (
 type APIServer struct {
 	addr string
 	db   *sql.DB
+	cdb  *sql.DB
 }
 
-func NewAPIServer(addr string, db *sql.DB) *APIServer {
+func NewAPIServer(addr string, db *sql.DB, cdb *sql.DB) *APIServer {
 	return &APIServer{
 		addr: addr,
 		db:   db,
+		cdb:  cdb,
 	}
 }
 
@@ -39,7 +41,7 @@ func (s *APIServer) Run() error {
 	postStoreHandler := post.NewHandler(postStore, userStore, redisCache)
 	postStoreHandler.RegisterRoutes(subrouter)
 
-	messageStore := message.NewStore(s.db)
+	messageStore := message.NewStore(s.cdb)
 	messageStoreHandler := message.NewHandler(messageStore, userStore)
 	messageStoreHandler.RegisterRoutes(subrouter)
 
