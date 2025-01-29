@@ -28,6 +28,7 @@ func NewAPIServer(addr string, db *sql.DB, cdb *sql.DB) *APIServer {
 
 func (s *APIServer) Run() error {
 	router := mux.NewRouter()
+	router.PathPrefix("/feed/").Handler(http.StripPrefix("/feed", http.FileServer(http.Dir("/go/src/api/frontend"))))
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 
 	userStore := user.NewStore(s.db)
