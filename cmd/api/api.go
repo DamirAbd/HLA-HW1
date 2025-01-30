@@ -9,6 +9,7 @@ import (
 	"github.com/DamirAbd/HLA-HW1/services/message"
 	"github.com/DamirAbd/HLA-HW1/services/post"
 	"github.com/DamirAbd/HLA-HW1/services/user"
+	"github.com/DamirAbd/HLA-HW1/websockets"
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +29,9 @@ func NewAPIServer(addr string, db *sql.DB, cdb *sql.DB) *APIServer {
 
 func (s *APIServer) Run() error {
 	router := mux.NewRouter()
-	router.PathPrefix("/feed/").Handler(http.StripPrefix("/feed", http.FileServer(http.Dir("/go/src/api/frontend"))))
+	manager := websockets.NewManager()
+	router.PathPrefix("/feed").Handler(http.StripPrefix("/feed", http.FileServer(http.Dir("/go/src/api/frontend"))))
+	router.Handle("/ws", http.HandlerFunc(manager.ServeWS))
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 
 	userStore := user.NewStore(s.db)
