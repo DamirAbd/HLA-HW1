@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/DamirAbd/HLA-HW1/services/auth"
+	"github.com/DamirAbd/HLA-HW1/stream"
 	"github.com/DamirAbd/HLA-HW1/types"
 	"github.com/DamirAbd/HLA-HW1/utils"
 	"github.com/google/uuid"
@@ -65,12 +67,34 @@ func (h *Handler) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authorPostsKey := post.AutorId
+	brokerAddress := "kafka1:29091"
+	topic := "user-posts"
 
-	postsForCache, _ := h.store.GetPostsByUsers([]string{authorPostsKey})
+	// Initialize the Kafka producer
+	kafkaProducer, err := stream.NewKafkaProducer(brokerAddress, topic)
+	if err != nil {
+		log.Fatalf("Failed to create Kafka producer: %v", err)
+	}
+	defer kafkaProducer.Close()
 
-	h.cache.Set(authorPostsKey, postsForCache)
+	// Sample post data
 
+	// Send the post to Kafka
+	if err := kafkaProducer.SendPost(post); err != nil {
+		log.Fatalf("Failed to send post to Kafka: %v", err)
+	}
+
+	log.Println("Post sent to Kafka successfully!")
+
+	/*
+		-----  temporary cutoff cache
+
+		authorPostsKey := post.AutorId
+
+		postsForCache, _ := h.store.GetPostsByUsers([]string{authorPostsKey})
+
+		h.cache.Set(authorPostsKey, postsForCache)
+	*/
 	// reply to client
 	utils.WriteJSON(w, http.StatusCreated, map[string]string{
 		"message": "Post created successfully",
