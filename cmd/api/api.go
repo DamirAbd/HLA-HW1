@@ -9,6 +9,7 @@ import (
 	"github.com/DamirAbd/HLA-HW1/services/message"
 	"github.com/DamirAbd/HLA-HW1/services/post"
 	"github.com/DamirAbd/HLA-HW1/services/user"
+	"github.com/DamirAbd/HLA-HW1/stream"
 	"github.com/DamirAbd/HLA-HW1/websockets"
 	"github.com/gorilla/mux"
 )
@@ -33,6 +34,11 @@ func (s *APIServer) Run() error {
 	router.PathPrefix("/feed").Handler(http.StripPrefix("/feed", http.FileServer(http.Dir("/go/src/api/frontend"))))
 	router.Handle("/ws", http.HandlerFunc(manager.ServeWS))
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
+
+	//init kafka consumer
+	kafkaConsumer := stream.NewKafkaConsumer("user-posts", "kafka1:29091", manager)
+
+	go kafkaConsumer.Start()
 
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)

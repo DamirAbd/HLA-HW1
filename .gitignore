@@ -4,3 +4,4 @@ volumes/
 helpers/
 .vscode
 /redisdata
+/bin

@@ -1,0 +1,32 @@
+participant "web browser" as w
+box application #f3eec3
+    participant "service\napi" as api 
+    participant "module\nproducer" as producer
+    participant "module\nconsumer" as consumer
+
+
+end box
+
+box database #f7e3af 
+    database "database\npostgres" as db
+end box
+
+box kafka #b0d0d3
+    participant "kafka\ntopic" as t
+end box
+w -> api: REST\nPOST /post/create
+activate api
+api -> db: store post
+api -> producer: send post to topic
+activate producer
+api --> w: REST\n/post/create
+deactivate api
+producer -> t: post to topic
+deactivate producer
+producer -[hidden]> t: 
+activate consumer
+loop #FFFFFF80
+    consumer -> t: poll()
+    t -> consumer: message with post data
+    consumer -> w: web-socket\npost
+end

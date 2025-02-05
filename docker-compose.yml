@@ -95,11 +95,11 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_INIT_LIMIT: 3
       ZOOKEEPER_SYNC_LIMIT: 2
-    healthcheck:
-      test: ["CMD-SHELL", "nc -zv localhost 2181"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+#    healthcheck:
+#      test: ["CMD-SHELL", "nc -zv localhost 2181"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
     networks:
       - app-net
 
@@ -117,11 +117,11 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:29091 #,PLAINTEXT_HOST://localhost:9091
-    healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --bootstrap-server kafka1:29091 --list || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+#    healthcheck:
+#      test: ["CMD-SHELL", "kafka-topics --bootstrap-server kafka1:29091 --list || exit 1"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
     networks:
       - app-net
 
