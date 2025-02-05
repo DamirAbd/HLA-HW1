@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Post Feed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 60%;
+            max-width: 800px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #6200ea;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .post-feed {
+            padding: 20px;
+        }
+        .post {
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .post h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: #333;
+        }
+        .post p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Post Feed</h1>
+        </div>
+        <div class="post-feed" id="post-feed">
+            <div class="post">
+                <h3>Post ID: 12345</h3>
+                <p><strong>Author ID:</strong> 123123123123</p>
+                <p><strong>Text:</strong> Пример поста загруженного при подключении.</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var socket = new WebSocket("ws://" + document.location.host + "/ws?user_id=12345");
+
+        socket.onmessage = function(event) {
+            var data = JSON.parse(event.data);
+            addPost(data.ID, data.authorID, data.post);
+        };
+
+        function addPost(postId, authorId, text) {
+            var postFeed = document.getElementById('post-feed');
+            var postElement = document.createElement('div');
+            postElement.className = 'post';
+            postElement.innerHTML = `
+                <h3>Post ID: ${postId}</h3>
+                <p><strong>Author ID:</strong> ${authorId}</p>
+                <p><strong>Text:</strong> ${text}</p>
+            `;
+            postFeed.insertBefore(postElement, postFeed.firstChild);
+        }
+
+        socket.onopen = function() {
+            console.log("WebSocket connection opened");
+        };
+
+        socket.onclose = function() {
+            console.log("WebSocket connection closed");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+    </script>
+</body>
+</html>
